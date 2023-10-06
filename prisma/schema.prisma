@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Marca {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  modelos   Modelo[]
+}
+
+model Modelo {
+  id           Int     @id @default(autoincrement())
+  nombre       String
+  marca        Marca   @relation(fields: [marcaId], references: [id])
+  marcaId      Int
+  seriales     Serial[]
+}
+
+model Serial {
+  id           Int          @id @default(autoincrement())
+  serial       Int
+  modelo       Modelo       @relation(fields: [modeloId], references: [id])
+  modeloId     Int
+  instanciaId  Int
+  
+}
+
+model Asistente {
+  idAsistente  Int       @id @default(autoincrement())
+  nombre       String
+  cedula       String
+  asistencias  Asistencia[] // Relación inversa
+}
+
+model Asistencia {
+  id            Int        @id @default(autoincrement())
+  idConsumible  Int
+  soporte       String
+  requisito     String
+  consumible    Consumible @relation(fields: [idConsumible], references: [id])
+  asistente     Asistente? @relation(fields: [idAsistente], references: [idAsistente]) // Usar idAsistente como referencia
+  idAsistente   Int?
+}
+
+
+model Consumible {
+  id          Int        @id @default(autoincrement())
+  nombre      String     // Agregamos el campo 'nombre'
+  asistencias Asistencia[] // Relación inversa
+}
+
+model Peticion {
+  id        Int    @id @default(autoincrement())
+  peticion  String
+}
+
